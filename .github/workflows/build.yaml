@@ -41,8 +41,6 @@ jobs:
             ${{ runner.os }}-target-
       - name: Build and Test Rust project
         run: cargo test --verbose
-      - name: Build Rust application
-        run: cargo build --release
       - name: Run Rust application
         run: cargo run --release
       - name: Copy page files
