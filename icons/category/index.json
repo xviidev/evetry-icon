@@ -1,0 +1,15 @@
+{
+  "dir": [],
+  "images": [
+    {
+      "filename": "nextjs.svg",
+      "title": "nextjs",
+      "path": "/category/nextjs.svg"
+    },
+    {
+      "filename": "reactjs.svg",
+      "title": "reactjs",
+      "path": "/category/reactjs.svg"
+    }
+  ]
+}

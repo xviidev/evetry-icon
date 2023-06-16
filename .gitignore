@@ -1,0 +1,19 @@
+# Rust
+/target/
+Cargo.lock
+
+# Build artifacts
+**/debug/
+**/release/
+
+# Generated files
+**/*.rs.bk
+
+# IDE/Editor specific
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Dependency directories
+/.cargo/
