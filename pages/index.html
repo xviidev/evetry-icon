@@ -11,13 +11,60 @@
       crossorigin="anonymous"
     />
   </head>
-  <body class="container-sm">
-    <h1 class="mb-4">Evetry Icon</h1>
+  <body>
+    <nav class="navbar bg-body-tertiary">
+      <div class="container-sm">
+        <a class="navbar-brand" href="#">
+          <img
+            src="https://icon.evetry.com/evetry.svg"
+            alt="Logo"
+            width="30"
+            height="30"
+            class="d-inline-block align-text-top"
+          />
+          Evetry Icon
+        </a>
+      </div>
+    </nav>
 
-    <ul
-      id="icon-lists"
-      class="row row-cols-3 row-cols-sm-4 row-cols-lg-6 row-cols-xl-8 list-unstyled list"
-    ></ul>
+    <!-- Flexbox container for aligning the toasts -->
+    <div
+      aria-live="polite"
+      aria-atomic="true"
+      class="d-flex justify-content-center align-items-center w-100 fixed-top"
+    >
+      <!-- Then put toasts within -->
+      <div
+        id="liveToast"
+        class="toast mt-5"
+        role="alert"
+        aria-live="assertive"
+        aria-atomic="true"
+        data-bs-delay="1000"
+      >
+        <div class="toast-header">
+          <strong class="me-auto">Sukses!</strong>
+          <button
+            type="button"
+            class="btn-close"
+            data-bs-dismiss="toast"
+            aria-label="Close"
+          ></button>
+        </div>
+        <div class="toast-body">Tautan berhasi disalin.</div>
+      </div>
+    </div>
+
+    <main class="container-sm mx-auto pt-5">
+      <nav aria-label="breadcrumb">
+        <ol class="breadcrumb" id="breadcrumb"></ol>
+      </nav>
+
+      <ul
+        id="icon-lists"
+        class="row row-cols-3 row-cols-sm-4 row-cols-lg-6 row-cols-xl-8 list-unstyled list mt-5"
+      ></ul>
+    </main>
 
     <script type="text/javascript">
       function initTooltip() {
@@ -38,11 +85,6 @@
         fetchData();
       });
 
-      function getData(dirValue) {
-        // Panggil fungsi yang ingin Anda jalankan ketika nilai dir berubah
-        console.log("Nilai dir berubah:", dirValue);
-      }
-
       // Change Dir
       function changeDirValue(newDirValue) {
         const searchParams = new URLSearchParams(window.location.search);
@@ -59,12 +101,13 @@
         const searchParams = new URLSearchParams(window.location.search);
         const currentDir = searchParams.get("dir");
 
+        createBreadrumb(currentDir?.split("/") || [""]);
+
         iconListsContainer.innerHTML = "";
 
         fetch(`https://icon.evetry.com${currentDir ?? ""}/index.json`).then(
           async (res) => {
             const json = await res.json();
-            console.log(json);
 
             // Buat folder
             json.dir.forEach((dir) => {
@@ -76,15 +119,13 @@
               el.innerHTML = html`<div
                 class="d-block text-body-emphasis text-decoration-none"
               >
-                <div
-                  class="px-3 py-4 mb-2 bg-body-secondary text-center rounded"
-                >
+                <div class="px-3 py-4 mb-2 bg-light text-center rounded">
                   <svg
                     xmlns="http://www.w3.org/2000/svg"
                     width="42"
                     height="42"
                     fill="currentColor"
-                    class="bi bi-folder2"
+                    class="bi bi-folder2 text-primary-emphasis"
                     viewBox="0 0 16 16"
                   >
                     <path
@@ -107,8 +148,15 @@
             json.images.forEach((image) => {
               const el = document.createElement("li");
               el.onclick = () => {
+                const toastBootstrap = bootstrap.Toast.getOrCreateInstance(
+                  document.getElementById("liveToast")
+                );
+
                 const url = `https://icon.evetry.com${image.path}`;
+
                 copyToClipboard(url);
+
+                toastBootstrap.show();
               };
               el.className = "col mb-4";
               el.innerHTML = html`<div
@@ -118,7 +166,7 @@
                   <img
                     loading="lazy"
                     data-bs-toggle="tooltip"
-                    data-bs-title="Klik untuk menyalin"
+                    data-bs-title="Klik untuk menyalin URL"
                     src="https://icon.evetry.com${image.path}"
                     height="42"
                     width="42"
@@ -138,6 +186,27 @@
             initTooltip();
           }
         );
+      }
+
+      function createBreadrumb(arr) {
+        const result = arr.map((item, index) => {
+          const title = index === 0 ? "Home" : item;
+          const path = "/" + arr.slice(1, index + 1).join("/");
+          return { title, path };
+        });
+
+        console.log(result);
+
+        const breadcrumbItem = result.map((data, index) => {
+          if (index + 1 === result.length)
+            return `<li class="breadcrumb-item active" aria-current="page">${data.title}</li>`;
+          return `<li class="breadcrumb-item"><a href="${
+            data.path === "/" ? "?" : `?dir=${data.path}`
+          }">${data.title}</a></li>`;
+        });
+
+        document.getElementById("breadcrumb").innerHTML =
+          breadcrumbItem.join("\n");
       }
 
       window.addEventListener("popstate", () => {
