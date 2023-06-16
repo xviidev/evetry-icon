@@ -1,4 +1,4 @@
-name: Deploy Rust project to GitHub Pages
+name: Deploy to GitHub Pages
 
 on:
   workflow_dispatch:
@@ -45,6 +45,8 @@ jobs:
         run: cargo build --release
       - name: Run Rust application
         run: cargo run --release
+      - name: Copy page files
+        run: cp -R pages/* icons/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v1
         with:
