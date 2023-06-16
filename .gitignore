@@ -17,3 +17,7 @@ Cargo.lock
 
 # Dependency directories
 /.cargo/
+
+
+# Build index.json
+icons/**/index.json
